@@ -157,10 +157,8 @@ if InDrug in DupremDrug:
         for i in data1:
             if i == 'Ineffective' or i == 'Marginally Effective':
                 data2.append(0)
-            elif i == "Moderately Effective" or i == 'Considerably Effective':
+            elif i == "Moderately Effective" or i == 'Considerably Effective' or i == 'Highly Effective:
                 data2.append(1)
-            elif i == 'Highly Effective' and len(i) == len('Highly Effective'):
-                data2.append(3)
         new_data['Effectiveness'] = data2
         data2 = []
         for i in new_data['Gender']:
@@ -174,10 +172,8 @@ if InDrug in DupremDrug:
         for i in data1:
             if i == 'No Side Effects' or i == 'Mild Side Effects':
                 data2.append(0)
-            elif i == "Moderate Side Effects":
+            elif i == "Moderate Side Effects" or i == 'Severe Side Effects' or i == 'Extremely Severe Side Effects':
                 data2.append(1)
-            elif i == 'Severe Side Effects' or i == 'Extremely Severe Side Effects':
-                data2.append(2)
         new_data['Side Effects'] = data2
         target = new_data['Effectiveness']
         cols = ['urlDrugName', 'Condition', 'Sides', 'Age']
@@ -198,16 +194,7 @@ if InDrug in DupremDrug:
         disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Ineffective', 'Moderately', 'Highly'])
         disp.plot()
         plt.show()
-        cnf_matrix = cm
-        print(cm, cnf_matrix)
-        FP = cnf_matrix.sum(axis=0) - np.diag(cnf_matrix)
-        FN = cnf_matrix.sum(axis=1) - np.diag(cnf_matrix)
-        TP = np.diag(cnf_matrix)
-        TN = cnf_matrix.sum() - (FP + FN + TP)
-        FP = FP.astype(float)
-        FN = FN.astype(float)
-        TP = TP.astype(float)
-        TN = TN.astype(float)
+        [TP, FP, FN, TN] = cm
         # Sensitivity, hit rate, recall, or true positive rate
         TPR = TP / (TP + FN)
         # Precision or positive predictive value
