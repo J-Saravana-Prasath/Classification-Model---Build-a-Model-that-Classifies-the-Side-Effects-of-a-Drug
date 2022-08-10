@@ -60,7 +60,6 @@ print("The Drugs are: ")
 for i in range(len(DupremDrug)):
     print("(", 1+i, ")", DupremDrug[i])
 countDrug = data["urlDrugName"].value_counts()
-InDrug = str(input("Enter the Drug name to be search:")).lower()
 if InDrug in DupremDrug:
     print("Details of the", InDrug, "Drug is available")
     new_data = []
@@ -148,17 +147,21 @@ if InDrug in DupremDrug:
     plt.ylabel('Side Effects')
     plt.title('Side effects of the Drug ' + InDrug.capitalize() + ' based on Age')
     plt.show()
+    side = new_data['Sides'].unique()
+    print("The Major Side Effects:\n",side)
 
     count = Counter(new_data['urlDrugName'])
     count = count[InDrug]
-    if int(count) > 150:
+    if count > 100:
         data1 = new_data['Effectiveness']
         data2 = []
         for i in data1:
             if i == 'Ineffective' or i == 'Marginally Effective':
                 data2.append(0)
-            elif i == "Moderately Effective" or i == 'Considerably Effective' or i == 'Highly Effective:
+            elif i == "Moderately Effective" or i == 'Considerably Effective':
                 data2.append(1)
+            elif i == 'Highly Effective':
+                data2.append(2)
         new_data['Effectiveness'] = data2
         data2 = []
         for i in new_data['Gender']:
@@ -172,8 +175,10 @@ if InDrug in DupremDrug:
         for i in data1:
             if i == 'No Side Effects' or i == 'Mild Side Effects':
                 data2.append(0)
-            elif i == "Moderate Side Effects" or i == 'Severe Side Effects' or i == 'Extremely Severe Side Effects':
+            elif i == "Moderate Side Effects":
                 data2.append(1)
+            elif i == 'Severe Side Effects' or i == 'Extremely Severe Side Effects':
+                data2.append(2)
         new_data['Side Effects'] = data2
         target = new_data['Effectiveness']
         cols = ['urlDrugName', 'Condition', 'Sides', 'Age']
@@ -193,16 +198,29 @@ if InDrug in DupremDrug:
         cm = confusion_matrix(y_test, svm_pred, labels=svm_clf.classes_)
         disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Ineffective', 'Moderately', 'Highly'])
         disp.plot()
+        plt.title("Confusion Matrix of Effectiveness of the Drug")
         plt.show()
-        [TP, FP, FN, TN] = cm
+        cnf_matrix = cm
+        FP = cnf_matrix.sum(axis=0) - np.diag(cnf_matrix)
+        FN = cnf_matrix.sum(axis=1) - np.diag(cnf_matrix)
+        TP = np.diag(cnf_matrix)
+        TN = cnf_matrix.sum() - (FP + FN + TP)
+        FP = FP.astype(float)
+        FN = FN.astype(float)
+        TP = TP.astype(float)
+        TN = TN.astype(float)
         # Sensitivity, hit rate, recall, or true positive rate
         TPR = TP / (TP + FN)
         # Precision or positive predictive value
         PPV = TP / (TP + FP)
+        # Specificity
+        spec = TN / (TN + FP)
         # Overall accuracy for each class
         ACC = (TP + TN) / (TP + FP + FN + TN)
-        F1 = (2*PPV*TPR)/(PPV+TPR)
-        print(TPR, ACC, PPV, F1)
+        F1 = (2 * PPV * TPR) / (PPV + TPR)
+        print("Sensitivity:", format(sum(TPR) / len(TPR),'0.2f'),  "\nSpecificity:", format(sum(spec) / len(spec),'0.2f'),"\nAccuracy:", format(sum(ACC) / len(ACC),'0.2f'), "\nPrecision:", format(sum(PPV) / len(PPV),'0.2f'),
+              "\nF1 Score:", format(sum(F1) / len(F1),'0.2f'))
+
         # Random Forest Classifier
         target = new_data['Side Effects']
         scaler = StandardScaler()
@@ -216,6 +234,28 @@ if InDrug in DupremDrug:
         disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['No Side Effects', 'Moderate Side Effects',
                                                                            'Severe Side Effects'])
         disp.plot()
+        plt.title("Confusion Matrix of Side Effects of the Drug")
         plt.show()
+        cnf_matrix = cm
+        FP = cnf_matrix.sum(axis=0) - np.diag(cnf_matrix)
+        FN = cnf_matrix.sum(axis=1) - np.diag(cnf_matrix)
+        TP = np.diag(cnf_matrix)
+        TN = cnf_matrix.sum() - (FP + FN + TP)
+        FP = FP.astype(float)
+        FN = FN.astype(float)
+        TP = TP.astype(float)
+        TN = TN.astype(float)
+        # Sensitivity, hit rate, recall, or true positive rate
+        TPR = TP / (TP + FN)
+        # Precision or positive predictive value
+        PPV = TP / (TP + FP)
+        # Specificity
+        spec = TN / (TN + FP)
+        # Overall accuracy for each class
+        ACC = (TP + TN) / (TP + FP + FN + TN)
+        F1 = (2 * PPV * TPR) / (PPV + TPR)
+        print("Sensitivity:", format(sum(TPR) / len(TPR),'0.2f'),  "\nSpecificity:", format(sum(spec) / len(spec),'0.2f'), "\nAccuracy:", format(sum(ACC) / len(ACC),'0.2f'), "\nPrecision:", format(sum(PPV) / len(PPV),'0.2f'),
+              "\nF1 Score:", format(sum(F1) / len(F1),'0.2f'))
+    
 else:
     print("The details of the Drug is not available")
