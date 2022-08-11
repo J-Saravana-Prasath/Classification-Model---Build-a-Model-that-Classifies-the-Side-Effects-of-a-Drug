@@ -149,6 +149,27 @@ if InDrug in DupremDrug:
     plt.show()
     side = new_data['Sides'].unique()
     print("The Major Side Effects:\n",side)
+    
+    maxi = Counter(new_data['Condition'])
+    maxi = dict(maxi)
+    maxi1 = list(maxi.values())
+    maxi1 = max(maxi1)
+    for key in maxi.keys():
+        if(maxi[key] == maxi1):
+            condit = key    
+    #print(condit)
+    Condition_Drug = []
+    con = data['Condition']
+    for i in range(len(data)):
+        if condit in con[i]:
+            pos = i
+            Condition_Drug.append(data.iloc[pos])
+    Condition_Drug = pd.DataFrame( Condition_Drug)
+    Condition_Drug.to_csv("Condtions.csv",index=False)
+    alter_drug = Condition_Drug['urlDrugName'].unique()
+    print("Other Alternate drug for the drug", InDrug,"for the same Treatment",condit)
+    for i in range(10):
+        print("(", 1+i, ")", alter_drug[i])
 
     count = Counter(new_data['urlDrugName'])
     count = count[InDrug]
