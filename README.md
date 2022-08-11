@@ -2,3 +2,4 @@
 TCS iON RIO 125
 Here I have created a program which help us to classify the side effects and effectiveness of a drug.
 And I have also attached my code and the dataset.
+And it can also show some alternate drugs for the same treatment.
